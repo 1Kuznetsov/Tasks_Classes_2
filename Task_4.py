@@ -1,3 +1,6 @@
+import re
+
+
 class RomanNumber:
     """
     Class representing the roman number system
@@ -13,7 +16,7 @@ class RomanNumber:
         :param rom_value: number written in string or int format
         """
 
-        if self.is_roman(rom_value):
+        if RomanNumber.is_roman(rom_value):
             self.rom_value = rom_value
         else:
             self.rom_value = None
@@ -25,16 +28,15 @@ class RomanNumber:
         :return: decimal number
         """
 
-        if self.rom_value is None:
-            return None
+        if self.rom_value is not None:
+            dec = 0
+            rom_num = self.rom_value
+            for dc, rm in RomanNumber.roman_digits:
+                while rom_num.startswith(rm):
+                    dec += dc
+                    rom_num = rom_num[len(rm):]
 
-        dec = 0
-        for dc, rm in RomanNumber.roman_digits:
-            while self.rom_value.startswith(rm):
-                dec += dc
-                self.rom_value = self.rom_value[len(rm):]
-
-        return dec
+            return dec
 
 
     @staticmethod
@@ -45,20 +47,15 @@ class RomanNumber:
         :return: True if value is roman and False otherwise
         """
 
-        if value is None:
-            return False
+        pattern = re.compile('''^(M{0,3})(D?C{0,3}|C[DM])(L?X{0,3}|X[LC])(V?I{0,3}|I[VX])$''''')
+        if re.match(pattern, value):
+            return True
+        return False
 
-        valid_symbols = ['I', 'V', 'X', 'L', 'C', 'D', 'M']
-        for sym in value:
-            if sym not in valid_symbols:
-                return False
+    def __repr__(self):
+        """
+        represents data
+        :return:
+        """
 
-        return True
-
-
-if __name__ == '__main__':
-    num = RomanNumber('MMXXIV')
-    print(num.is_roman(num.rom_value))
-    res = num.decimal_number()
-    print(res)
-
+        return str(self.rom_value)

@@ -1,3 +1,50 @@
+import re
+
+
+def to_dec(val):
+    """
+    Method converting the roman number to decimal
+    :return: decimal number
+    """
+
+    if val is None:
+        return None
+
+    dec = 0
+    rom_num = val
+    for dc, rm in RomanNumber.roman_digits:
+        while rom_num.startswith(rm):
+            dec += dc
+            rom_num = rom_num[len(rm):]
+
+    return dec
+
+
+def to_rom(val):
+    """
+    Method converting the decimal number to roman
+    :return: roman number
+    """
+
+    if val is None:
+        return None
+
+    rom = ''
+    try:
+        int_num = int(val)
+
+    except ValueError:
+        return None
+
+    while int_num > 0:
+        for dc, rm in RomanNumber.roman_digits:
+            while int_num >= dc:
+                int_num -= dc
+                rom += rm
+
+    return rom
+
+
 class RomanNumber:
     """
     Class representing the roman number system
@@ -7,23 +54,34 @@ class RomanNumber:
                     (90, 'XC'), (50, 'L'), (40, 'XL'), (10, 'X'), (9, 'IX'),
                     (5, 'V'), (4, 'IV'), (1, 'I')]
 
-    def __init__(self, rom_value):
+    def __init__(self, number):
         """
         Sets all the necessary attributes for the class User
-        :param rom_value: number written in string or int format
+        :param number: number written in string or int format
         """
 
-        if self.is_int(rom_value):
-            self.int_value = rom_value
-        elif not self.is_roman(rom_value):
-            self.int_value = None
-            print('ERROR')
+        if self.is_int(number):
+            self.int_value = number
 
-        elif self.is_roman(rom_value):
-            self.rom_value = rom_value
+            if to_rom(number) is not None:
+                self.rom_value = to_rom(number)
+            else:
+                self.rom_value = None
+                print('ERROR')
+
+        elif self.is_roman(number):
+            self.rom_value = number
+
+            if to_dec(number) is not None:
+                self.int_value = to_dec(number)
+
+            else:
+                self.int_value = None
+                print('ERROR')
+
         else:
             self.rom_value = None
-            print('ERROR')
+            self.int_value = None
 
     def decimal_number(self):
         """
@@ -35,11 +93,13 @@ class RomanNumber:
             return None
 
         dec = 0
+        rom_num = self.rom_value
         for dc, rm in RomanNumber.roman_digits:
-            while self.rom_value.startswith(rm):
+            while rom_num.startswith(rm):
                 dec += dc
-                self.rom_value = self.rom_value[len(rm):]
+                rom_num = rom_num[len(rm):]
 
+        self.int_value = dec
         return dec
 
     def roman_number(self):
@@ -52,12 +112,15 @@ class RomanNumber:
             return None
 
         rom = ''
-        while self.int_value > 0:
+        int_num = self.int_value
+
+        while int_num > 0:
             for dc, rm in RomanNumber.roman_digits:
-                while self.int_value >= dc:
-                    self.int_value -= dc
+                while int_num >= dc:
+                    int_num -= dc
                     rom += rm
 
+        self.rom_value = rom
         return rom
 
     @staticmethod
@@ -68,16 +131,10 @@ class RomanNumber:
         :return: True if value is roman and False otherwise
         """
 
-        if value is None:
-            return False
-
-        valid_symbols = ['I', 'V', 'X', 'L', 'C', 'D', 'M']
-
-        for sym in str(value):
-            if sym not in valid_symbols:
-                return False
-
-        return True
+        pattern = re.compile('''^(M{0,3})(D?C{0,3}|C[DM])(L?X{0,3}|X[LC])(V?I{0,3}|I[VX])$''''')
+        if re.match(pattern, value):
+            return True
+        return False
 
     @staticmethod
     def is_int(value):
@@ -98,110 +155,189 @@ class RomanNumber:
 
         return True
 
-    @staticmethod
-    def make_nums(x, y):
-        """
-        Method checking that numbers can be converted into int type
-        :param x: first num
-        :param y: second num
-        :return: integer x and y
-        """
-
-        if not RomanNumber.is_int(x):
-            if not RomanNumber.is_roman(x):
-                print('ERROR')
-                x, y = None, None
-                return x, y
-            x = x.decimal_number()
-
-        if not RomanNumber.is_int(y):
-            if not RomanNumber.is_roman(y):
-                print('ERROR')
-                x, y = None, None
-                return x, y
-            y = y.decimal_number()
-
-        return x, y
-
-    @staticmethod
-    def addition(x, y):
+    def __add__(self, other):
         """
         Method of addition two numbers
-        :param x: first number
-        :param y: second number
+        :param other: second number for math operation
         :return: result in roman number system
         """
-        x, y = RomanNumber.make_nums(x, y)
-        if x is None or y is None:
-            print('ERROR')
-        else:
-            result = RomanNumber(x + y)
-            return RomanNumber.roman_number(result)
 
-    @staticmethod
-    def subtraction(x, y):
+        if self.int_value is not None and other.int_value is not None:
+            return RomanNumber(self.int_value + other.int_value)
+        return 'ERROR'
+
+    def __sub__(self, other):
         """
         Method of subtraction two numbers
-        :param x: first number
-        :param y: second number
+        :param other: second number for math operation
         :return: result in roman number system
         """
 
-        x, y = RomanNumber.make_nums(x, y)
-        if x is None or y is None:
-            print('ERROR')
-        else:
-            if x > y:
-                result = RomanNumber(x - y)
-                return RomanNumber.roman_number(result)
-            else:
-                result = RomanNumber(y - x)
-                return '-' + RomanNumber.roman_number(result)
+        if self.int_value is not None and other.int_value is not None:
+            return RomanNumber(self.int_value - other.int_value)
+        return 'ERROR'
 
-    @staticmethod
-    def multiplication(x, y):
+    def __mul__(self, other):
         """
         Method of multiplication two numbers
-        :param x: first number
-        :param y: second number
+        :param other: second number for math operation
         :return: result in roman number system
         """
 
-        x, y = RomanNumber.make_nums(x, y)
-        if x is None or y is None:
-            print('ERROR')
-        else:
-            result = RomanNumber(x * y)
-            return RomanNumber.roman_number(result)
+        if self.int_value is not None and other.int_value is not None:
+            return RomanNumber(self.int_value * other.int_value)
+        return 'ERROR'
 
-    @staticmethod
-    def division(x, y):
+    def __truediv__(self, other):
         """
         Method of division two numbers
-        :param x: first number
-        :param y: second number
+        :param other: second number for math operation
         :return: result in roman number system
         """
 
-        x, y = RomanNumber.make_nums(x, y)
-        if x is None or y is None:
-            print('ERROR')
-        else:
-            if y != 0 and x % y == 0:
-                result = RomanNumber(int(x / y))
-                return RomanNumber.roman_number(result)
+        if self.int_value is not None and other.int_value is not None:
+            if other.int_value != 0 and self.int_value % other.int_value == 0:
+                return RomanNumber(int(self.int_value / other.int_value))
+        return 'ERROR'
+
+    def __floordiv__(self, other):
+        """
+        Method of division two numbers without remainder
+        :param other: second number for math operation
+        :return:
+        """
+
+        if self.int_value is not None and other.int_value is not None:
+            if other.int_value != 0:
+                return RomanNumber(self.int_value // other.int_value)
+        return 'ERROR'
+
+    def __mod__(self, other):
+        """
+        Method of returning the remainder of the division
+        :param other: second number for math operation
+        :return:
+        """
+
+        if self.int_value is not None and other.int_value is not None:
+            if other.int_value != 0:
+                return RomanNumber(self.int_value % other.int_value)
+        return 'ERROR'
+
+    def __pow__(self, other):
+        """
+        Method of exponentiation
+        :param other: second number for math operation
+        :return:
+        """
+
+        if self.int_value is not None and other.int_value is not None:
+            return RomanNumber(self.int_value ** other.int_value)
+        return 'ERROR'
+
+    def __iadd__(self, other):
+        """
+        Method of addition other number to first
+        :param other: second number for math operation
+        :return:
+        """
+
+        if self.int_value is not None and other.int_value is not None:
+            self.int_value += other.int_value
+            self.rom_value = to_rom(self.int_value)
+            return self
+        return 'ERROR'
+
+    def __isub__(self, other):
+        """
+        Method of subtraction the second number from the first
+        :param other: second number for math operation
+        :return:
+        """
+
+        if self.int_value is not None and other.int_value is not None:
+            self.int_value -= other.int_value
+            self.rom_value = to_rom(self.int_value)
+            return self
+        return 'ERROR'
+
+    def __imul__(self, other):
+        """
+        Method of multiplication the first number by the second
+        :param other: second number for math operation
+        :return:
+        """
+
+        if self.int_value is not None and other.int_value is not None:
+            self.int_value *= other.int_value
+            self.rom_value = to_rom(self.int_value)
+            return self
+        return 'ERROR'
+
+    def __itruediv__(self, other):
+        """
+        Method of division the first number by the second
+        :param other: second number for math operation
+        :return:
+        """
+
+        if self.int_value is not None and other.int_value is not None:
+            if other.int_value != 0 and self.int_value % other.int_value == 0:
+                self.int_value /= other.int_value
+                self.rom_value = to_rom(self.int_value)
+                return self
+        return 'ERROR'
+
+    def __ifloordiv__(self, other):
+        """
+        Method of division without remainder the first number by the second
+        :param other: second number for math operation
+        :return:
+        """
+
+        if self.int_value is not None and other.int_value is not None:
+            self.int_value //= other.int_value
+            self.rom_value = to_rom(self.int_value)
+            return self
+        return 'ERROR'
+
+    def __imod__(self, other):
+        """
+        Method of calculating the remainder from division the first number by the second
+        :param other: second number for math operation
+        :return:
+        """
+
+        if self.int_value is not None and other.int_value is not None:
+            self.int_value %= other.int_value
+            self.rom_value = to_rom(self.int_value)
+            return self
+        return 'ERROR'
+
+    def __ipow__(self, other):
+        """
+        Method of exponentiation the first number to the second number degree
+        :param other: second number for math operation
+        :return:
+        """
+
+        if self.int_value is not None and other.int_value is not None:
+            self.int_value **= other.int_value
+            self.rom_value = to_rom(self.int_value)
+            return self
+        return 'ERROR'
+
+    def __repr__(self):
+        """
+        represents data
+        :return:
+        """
+
+        if self.rom_value is None and self.int_value is None:
             return 'ERROR'
 
+        if self.rom_value is not None:
+            return str(self.rom_value)
 
-if __name__ == '__main__':
-    num = RomanNumber('MMXXIV')
-    print(num.is_roman(num.rom_value))
-    res = num.decimal_number()
-    print(res)
-    num_2 = RomanNumber(2024)
-    print(num_2.roman_number())
-    r = RomanNumber.addition(10, 5)
-    q = RomanNumber.subtraction(29, 32)
-    p = RomanNumber.multiplication(5, 30)
-    t = RomanNumber.division(10, 2)
-    print(r, q, p, t)
+        if self.int_value is not None:
+            return str(self.int_value)

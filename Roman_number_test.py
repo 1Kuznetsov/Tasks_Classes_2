@@ -1,13 +1,30 @@
 from Task_6 import RomanNumber
 
-num = RomanNumber('MMXXIV')
-print(num.is_roman(num.rom_value))
-res = num.decimal_number()
-print(res)
-num_2 = RomanNumber(2024)
-print(num_2.roman_number())
-r = RomanNumber.addition(10, 5)
-q = RomanNumber.subtraction(29, 32)
-p = RomanNumber.multiplication(5, 30)
-t = RomanNumber.division(10, 2)
-print(r, q, p, t)
+a = RomanNumber('XI')
+b = RomanNumber('VII')
+c = a + b
+print(c)
+d = RomanNumber('XII')
+print(c - d)
+e = RomanNumber('XXXIV')
+f = e * a
+print(f)
+print(f / RomanNumber('II'))
+g = f / b
+print(f // b)
+print(f % b)
+print(RomanNumber('II') ** RomanNumber('X'))
+a -= b
+print(a)
+b += RomanNumber('XX')
+print(b)
+b /= RomanNumber('III')
+print(b)
+b *= a
+print(b)
+b /= RomanNumber('X')
+print(b)
+e //= RomanNumber('X')
+print(e)
+e %= RomanNumber('II')
+print(e)
