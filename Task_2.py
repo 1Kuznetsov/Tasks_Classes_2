@@ -3,7 +3,7 @@ class NavalBattle:
     Class representing the naval battle game
     """
 
-    playing_field = [[0]*10 for _ in range(10)]
+    playing_field = []
 
     def __init__(self, player_sym):
         """
@@ -21,9 +21,15 @@ class NavalBattle:
         """
 
         for row in NavalBattle.playing_field:
-            print(' '.join([cell if cell != 1 and cell != 0 else '~' for cell in row]))
+            ptr = ''
+            for cell in row:
+                if cell != 1 and cell != 0:
+                    ptr += cell
+                else:
+                    ptr += '~'
+            print(ptr)
 
-    def shot(self, x, y):
+    def shot(self, y, x):
         """
         Method of making a turn
         :param x: coordinate of x-axis
@@ -38,17 +44,3 @@ class NavalBattle:
         else:
             NavalBattle.playing_field[x-1][y-1] = 'o'
             print('Away')
-
-
-if __name__ == '__main__':
-    player1 = NavalBattle('x')
-    player2 = NavalBattle('$')
-
-    player1.playing_field[0][0] = 0
-    player1.playing_field[0][1] = 1
-    player2.playing_field[1][0] = 1
-    player2.playing_field[1][1] = 1
-
-    player1.shot(1, 1)
-    NavalBattle.show()
-    player2.shot(2, 2)

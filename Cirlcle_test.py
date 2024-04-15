@@ -1,10 +1,11 @@
 from Task_1 import Circle
 
-circle1 = Circle(2)
-circle2 = Circle()
-
-print(circle1.area())
-print(circle2.area())
-
+c1 = Circle()
+c2 = Circle(7)
+c3 = Circle(5)
+print(c2.area())
+print(c3)
+print(Circle.pi)
+print(Circle.all_circles)
 print(Circle.total_area())
-
+print(len(c3.__class__.all_circles))

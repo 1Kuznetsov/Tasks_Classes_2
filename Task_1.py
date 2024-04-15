@@ -4,6 +4,7 @@ class Circle:
     """
 
     all_circles = []
+    pi = 3.1415
 
     def __init__(self, radius=1):
         """
@@ -11,7 +12,6 @@ class Circle:
         :param radius: radius of circle
         """
 
-        self.pi = 3.1415
         self.radius = radius
         self.all_circles.append(self)
 
@@ -37,6 +37,9 @@ class Circle:
 
         return total_area
 
+    def __repr__(self):
+        return str(self.radius)
+
 
 if __name__ == '__main__':
     circle1 = Circle(2)
@@ -46,4 +49,3 @@ if __name__ == '__main__':
     print(circle2.area())
 
     print(Circle.total_area())
-
